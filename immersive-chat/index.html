@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Lucy Support - Full Screen</title>
+    <title>Immersive Chat - Lucy Next Gen</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="immersive-chat-page">
+    
+    <div class="immersive-header">
+        <div class="immersive-header-content">
+            <div class="immersive-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/client_software_logo.svg" alt="client" class="client-logo-img">
+            </div>
+            <div class="immersive-nav">
+                <a href="#" class="immersive-link">Dashboard</a>
+                <a href="#" class="immersive-link">Conversation</a>
+                <a href="#" class="immersive-link active">Immersive</a>
+            </div>
+            <div class="immersive-user">
+                <span class="user-email-mini">client@salesforce.com</span>
+            </div>
+        </div>
+    </div>
 
     <div id="loadingOverlay" class="immersive-welcome">
         <div class="immersive-welcome-content">
@@ -22,8 +38,6 @@
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
-                
-                // 1. Tell JS to hide the button (CSS will do the rest)
                 embeddedservice_bootstrap.settings.hideChatButton = true; 
 
                 embeddedservice_bootstrap.init(
@@ -35,49 +49,44 @@
                     }
                 );
 
-                // 2. AGGRESSIVE AUTO-LAUNCH LOOP
-                // We check every 200ms if the API is ready to "Launch"
-                let launchTimer = setInterval(() => {
-                    if (typeof embeddedservice_bootstrap.utilAPI !== 'undefined') {
-                        embeddedservice_bootstrap.utilAPI.launchChat()
-                            .then(() => {
-                                clearInterval(launchTimer);
-                                console.log("Chat Auto-Launched Successfully");
-                                setupFullPageUI();
-                            })
-                            .catch((err) => {
-                                // Usually fails if API is loading or Org is offline
-                                console.log("Waiting for Chat API...");
-                            });
-                    }
-                }, 200);
-
-                // Safety timeout: stop trying after 15 seconds
-                setTimeout(() => clearInterval(launchTimer), 15000);
+                // --- THE HANDSHAKE: Wait for Salesforce to be Ready ---
+                window.addEventListener("onEmbeddedMessagingReady", () => {
+                    console.log("Salesforce Handshake Complete. Launching...");
+                    
+                    embeddedservice_bootstrap.utilAPI.launchChat()
+                        .then(() => {
+                            console.log("Chat Auto-Launched.");
+                            markChatAsReady();
+                        })
+                        .catch((err) => {
+                            console.error("Launch failed:", err);
+                        });
+                });
 
             } catch (err) {
-                console.error('Error initializing Salesforce:', err);
+                console.error('Initialization Error:', err);
             }
         };
 
-        function setupFullPageUI() {
-            // Find ALL possible Salesforce UI pieces
-            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
+        function markChatAsReady() {
             const container = document.getElementById('chatContainer');
             const loader = document.getElementById('loadingOverlay');
             
+            // Grab any injected Salesforce UI
+            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
+            
             if (sfElements.length > 0) {
                 sfElements.forEach(el => {
-                    container.appendChild(el); // Move into our controlled div
+                    container.appendChild(el); 
                     el.classList.add('chat-ready');
                 });
 
-                // Smoothly hide loader
+                // Smooth transition: Hide loader
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
             } else {
-                // If launch returned success but DOM isn't ready, wait a beat
-                setTimeout(setupFullPageUI, 100);
+                // Retry until elements appear in DOM
+                setTimeout(markChatAsReady, 200);
             }
         }
     </script>
