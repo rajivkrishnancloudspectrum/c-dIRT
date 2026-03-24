@@ -1,118 +1,1265 @@
-/* Base Reset */
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Variables */
 :root {
-    --primary: #2563eb;
-    --secondary: #1e40af;
-    --text: #1f2937;
-    --bg: #f9fafb;
-    --white: #ffffff;
-    --border: #e5e7eb;
+    /* client Official Brand Colors */
+    --client-blue: #13B5EA;
+    --client-primary-blue: #0089DC;
+    --client-navy: #213B55;
+    --client-teal: #6FEFC1;
+    --white: #FFFFFF;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --error-red: #DC2626;
 }
 
-/* Body */
 body {
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow: hidden; /* ✅ Prevent scroll during immersive */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--client-navy);
+    background-color: var(--white);
 }
 
-/* Header */
-.header {
-    position: fixed;
+/* Educational Notice */
+.educational-notice {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+    color: white;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    position: sticky;
     top: 0;
-    width: 100%;
-    height: 60px; /* ✅ fixed height */
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
     z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.header-content {
+/* Educational Banner */
+.educational-banner {
+    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%);
+    border-bottom: 2px solid #FFA000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 64px;
+    z-index: 100;
+}
+
+.educational-banner-content {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0.875rem 2rem;
     display: flex;
-    justify-content: center; /* ✅ center logo (clean look) */
     align-items: center;
-    height: 100%;
-    padding: 0 24px;
+    gap: 0.75rem;
 }
 
-/* Logo */
-.logo {
-    font-weight: bold;
-    font-size: 18px;
+.educational-banner-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
 }
 
-/* Chat Container */
-#chatContainer {
+.educational-banner-text {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/* Adjust main content for banner */
+.dashboard-page .main-content {
+    padding-top: 0;
+}
+
+.conversation-main {
+    padding-top: 0;
+}
+
+/* Immersive page banner positioning */
+.immersive-chat-page .educational-banner {
     position: fixed;
-    top: 60px; /* below header */
+    top: 60px;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: white;
-    overflow: hidden;
+    z-index: 999;
 }
 
-/* Welcome */
-.welcome {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    text-align: center;
+.immersive-chat-page .immersive-container {
+    top: 106px;
+    height: calc(100vh - 106px);
 }
 
-/* =========================================
-   🔥 SALESFORCE EMBEDDED MESSAGING OVERRIDES
-   ========================================= */
-
-/* ❌ HARD HIDE floating button */
-.embeddedMessagingConversationButton {
-    display: none !important;
+.immersive-chat-page .embeddedMessagingFrame,
+.immersive-chat-page embeddedservice-chat-header,
+.immersive-chat-page .embeddedServiceSidebar,
+.immersive-chat-page .embeddedMessagingConversationButton {
+    top: 106px !important;
+    height: calc(100vh - 106px) !important;
+    max-height: calc(100vh - 106px) !important;
 }
 
-/* ❌ Kill default fixed sidebar behavior */
+.immersive-chat-page .slds-docked_container {
+    top: 106px !important;
+    height: calc(100vh - 106px) !important;
+}
+
+/* client Logo */
+.client-logo {
+    display: block;
+}
+
+.client-logo-img {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+.login-page .client-logo-img {
+    height: 40px;
+}
+
+.client-logo-fallback {
+    display: none;
+}
+
+.client-logo-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #13B5EA;
+    letter-spacing: -0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+.login-page .client-logo-text {
+    font-size: 2.5rem;
+}
+
+/* Salesforce Embedded Messaging - Full Screen Sidebar */
 .embeddedMessagingFrame,
-.embeddedServiceSidebar,
+.embeddedMessagingConversationButton,
 embeddedservice-chat-header,
-.slds-docked_container {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+.embeddedServiceSidebar {
+    position: fixed !important;
     right: 0 !important;
+    top: 0 !important;
     bottom: 0 !important;
-
-    width: 100% !important;
-    height: 100% !important;
-
-    max-width: 100% !important;
-    max-height: 100% !important;
-
+    width: 400px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
     border: none !important;
+    border-left: 1px solid var(--gray-200) !important;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1) !important;
+    z-index: 999 !important;
     border-radius: 0 !important;
-    box-shadow: none !important;
 }
 
-/* Ensure iframe fills properly */
+/* Target the iframe container */
 .embeddedMessagingFrame iframe {
     width: 100% !important;
     height: 100% !important;
 }
 
-/* Remove Salesforce transitions (prevents flicker) */
-.embeddedServiceSidebar,
-.embeddedMessagingFrame {
+/* Hide the chat button since we want it always open */
+.embeddedMessagingConversationButton[data-type="fab"] {
+    display: none !important;
+}
+
+/* Global overrides for Salesforce embedded messaging positioning */
+body embeddedservice-chat-header,
+body .embeddedServiceSidebar,
+body .embeddedMessagingFrame {
     transition: none !important;
 }
 
-/* Optional: smooth appearance */
-.chat-ready {
-    opacity: 1;
+/* Prevent default Salesforce bottom-right positioning */
+.slds-docked-composer {
+    position: inherit !important;
+}
+
+body .embeddedServiceSidebar.layout-docked,
+body .embeddedServiceSidebar.layout-float {
+    position: inherit !important;
+}
+
+/* Adjust main content to accommodate sidebar */
+.dashboard-page .main-content {
+    margin-right: 400px;
+    transition: margin-right 0.3s ease;
+}
+
+.dashboard-page .navbar {
+    margin-right: 400px;
+    transition: margin-right 0.3s ease;
+}
+
+/* Mobile responsive - hide sidebar or make it overlay */
+@media (max-width: 768px) {
+    .embeddedMessagingFrame,
+    .embeddedMessagingConversationButton,
+    embeddedservice-chat-header,
+    .embeddedServiceSidebar {
+        width: 100% !important;
+        max-width: 400px !important;
+    }
+
+    .dashboard-page .main-content,
+    .dashboard-page .navbar {
+        margin-right: 0;
+    }
+}
+
+/* ========================================
+   CONVERSATION FIRST PAGE STYLES
+   ======================================== */
+
+.conversation-first-page {
+    background: linear-gradient(135deg, #E6F7FF 0%, #F0F9FF 100%);
+    min-height: 100vh;
+}
+
+.conversation-main {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 64px);
+}
+
+.conversation-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.conversation-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.conversation-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--client-navy);
+    margin-bottom: 0.5rem;
+}
+
+.conversation-subtitle {
+    font-size: 1.25rem;
+    color: var(--gray-600);
+}
+
+.conversation-chat-area {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    min-height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+    color: var(--gray-600);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--client-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hide chat initially to prevent flash */
+.conversation-first-page .embeddedMessagingFrame,
+.conversation-first-page embeddedservice-chat-header,
+.conversation-first-page .embeddedServiceSidebar,
+.conversation-first-page .embeddedMessagingConversationButton {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+/* Position chat in the center container */
+.conversation-first-page .embeddedMessagingFrame,
+.conversation-first-page embeddedservice-chat-header,
+.conversation-first-page .embeddedServiceSidebar,
+.conversation-first-page .embeddedMessagingConversationButton {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+}
+
+/* Show chat after it's positioned */
+.conversation-first-page .embeddedMessagingFrame.chat-ready,
+.conversation-first-page embeddedservice-chat-header.chat-ready,
+.conversation-first-page .embeddedServiceSidebar.chat-ready,
+.conversation-first-page .embeddedMessagingConversationButton.chat-ready {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.conversation-chat-area {
+    position: relative !important;
+}
+
+/* Override any Salesforce default positioning for conversation page */
+.conversation-first-page .slds-docked_container {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+}
+
+/* ========================================
+   SPLIT VIEW PAGE STYLES
+   ======================================== */
+
+.split-view-page {
+    background-color: var(--gray-50);
+    overflow: hidden;
+}
+
+.split-view-page .split-container {
+    display: flex;
+    height: calc(100vh - 64px - 48px);
+    margin-top: 0;
+}
+
+.split-left {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--white);
+    border-right: 1px solid var(--gray-200);
+}
+
+.split-right {
+    width: 50%;
+    position: relative;
+    background-color: var(--gray-50);
+}
+
+.split-content {
+    padding: 2rem;
+    max-width: 800px;
+}
+
+.split-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--client-navy);
+    margin-bottom: 2rem;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.quick-action-card {
+    background: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.quick-action-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-card h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--client-navy);
+    margin-bottom: 0.25rem;
+}
+
+.quick-action-card p {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.split-info-section {
+    background: linear-gradient(135deg, var(--client-blue) 0%, var(--client-primary-blue) 100%);
+    padding: 2rem;
+    border-radius: 16px;
+    color: var(--white);
+    margin-bottom: 2rem;
+}
+
+.split-info-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.info-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.split-help-section {
+    background-color: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--client-blue);
+}
+
+.split-help-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--client-navy);
+    margin-bottom: 0.75rem;
+}
+
+.split-help-section p {
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+}
+
+.split-help-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.split-help-section li {
+    padding: 0.5rem 0;
+    color: var(--gray-600);
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.split-help-section li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--client-blue);
+    font-weight: bold;
+}
+
+.chat-header-bar {
+    background: linear-gradient(135deg, var(--client-blue) 0%, var(--client-primary-blue) 100%);
+    padding: 1.5rem 2rem;
+    color: var(--white);
+}
+
+.chat-header-bar h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.chat-header-bar p {
+    font-size: 0.9375rem;
+    opacity: 0.9;
+}
+
+/* Hide chat initially to prevent flash */
+.split-view-page .embeddedMessagingFrame,
+.split-view-page embeddedservice-chat-header,
+.split-view-page .embeddedServiceSidebar,
+.split-view-page .embeddedMessagingConversationButton {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+/* Position chat in split right */
+.split-view-page .embeddedMessagingFrame,
+.split-view-page embeddedservice-chat-header,
+.split-view-page .embeddedServiceSidebar,
+.split-view-page .embeddedMessagingConversationButton {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border: none !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Show chat after it's positioned */
+.split-view-page .embeddedMessagingFrame.chat-ready,
+.split-view-page embeddedservice-chat-header.chat-ready,
+.split-view-page .embeddedServiceSidebar.chat-ready,
+.split-view-page .embeddedMessagingConversationButton.chat-ready {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.split-right {
+    position: relative !important;
+}
+
+/* Override any Salesforce default positioning for split view */
+.split-view-page .slds-docked_container {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+}
+
+/* ========================================
+   IMMERSIVE CHAT PAGE STYLES
+   ======================================== */
+
+.immersive-chat-page {
+    background-color: var(--gray-50);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.immersive-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.immersive-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    max-width: 100%;
+}
+
+.immersive-brand {
+    flex-shrink: 0;
+}
+
+.immersive-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.immersive-link {
+    padding: 0.5rem 1rem;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.immersive-link:hover {
+    background-color: var(--gray-100);
+    color: var(--client-navy);
+}
+
+.immersive-link.active {
+    color: var(--client-blue);
+    background-color: rgba(19, 181, 234, 0.08);
+}
+
+.immersive-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.user-email-mini {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--gray-700);
+    transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+    background-color: var(--gray-50);
+    border-color: var(--gray-400);
+    color: var(--client-navy);
+}
+
+.immersive-container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--white);
+}
+
+.immersive-welcome {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #E6F7FF 0%, #F0F9FF 50%, #FFFFFF 100%);
+}
+
+.immersive-welcome-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.immersive-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.immersive-welcome h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--client-navy);
+    margin-bottom: 1rem;
+}
+
+.immersive-welcome p {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+}
+
+/* Hide chat initially to prevent flash */
+.immersive-chat-page .embeddedMessagingFrame,
+.immersive-chat-page embeddedservice-chat-header,
+.immersive-chat-page .embeddedServiceSidebar,
+.immersive-chat-page .embeddedMessagingConversationButton {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+/* Position chat immersively */
+.immersive-chat-page .embeddedMessagingFrame,
+.immersive-chat-page embeddedservice-chat-header,
+.immersive-chat-page .embeddedServiceSidebar,
+.immersive-chat-page .embeddedMessagingConversationButton {
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 60px) !important;
+    max-width: 100% !important;
+    max-height: calc(100vh - 60px) !important;
+    border: none !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Show chat after it's positioned */
+.immersive-chat-page .embeddedMessagingFrame.chat-ready,
+.immersive-chat-page embeddedservice-chat-header.chat-ready,
+.immersive-chat-page .embeddedServiceSidebar.chat-ready,
+.immersive-chat-page .embeddedMessagingConversationButton.chat-ready {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.immersive-container {
+    position: relative !important;
+}
+
+/* Override any Salesforce default positioning for immersive */
+.immersive-chat-page .slds-docked_container {
+    position: fixed !important;
+    width: 100% !important;
+    height: calc(100vh - 60px) !important;
+    top: 60px !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: 0 !important;
+}
+
+/* ========================================
+   RESPONSIVE STYLES FOR NEW PAGES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .conversation-title {
+        font-size: 2rem;
+    }
+
+    .split-container {
+        flex-direction: column;
+    }
+
+    .split-left,
+    .split-right {
+        width: 100%;
+        height: 50vh;
+    }
+
+    .split-content {
+        padding: 1rem;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .immersive-nav {
+        display: none;
+    }
+
+    .immersive-header-content {
+        padding: 1rem;
+    }
+
+    .educational-banner-content {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .educational-banner-icon {
+        font-size: 1rem;
+    }
+
+    .educational-banner-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* Login Page Styles */
+.login-page {
+    background-color: var(--gray-50);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+    padding: 2rem;
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--client-blue);
+    letter-spacing: -0.5px;
+}
+
+.login-card {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--client-navy);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--client-navy);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--client-blue);
+    box-shadow: 0 0 0 3px rgba(19, 181, 234, 0.1);
+}
+
+.error-message {
+    padding: 0.75rem 1rem;
+    background-color: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    border-radius: 6px;
+    color: var(--error-red);
+    font-size: 0.875rem;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    background-color: var(--client-blue);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--client-primary-blue);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.page-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.link {
+    color: var(--client-blue);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.link:hover {
+    color: var(--client-primary-blue);
+    text-decoration: underline;
+}
+
+/* Dashboard Page Styles */
+.dashboard-page {
+    background-color: var(--gray-50);
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.nav-brand .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--client-blue);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    border-radius: 6px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-link:hover {
+    background-color: var(--gray-100);
+    color: var(--client-navy);
+}
+
+.nav-link.active {
+    color: var(--client-blue);
+    background-color: rgba(19, 181, 234, 0.08);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.btn-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--client-navy);
+    background-color: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--gray-50);
+    border-color: var(--gray-400);
+}
+
+.main-content {
+    padding-bottom: 4rem;
+}
+
+.content-wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 4rem 0 3rem;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--client-navy);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+/* Features Section */
+.features-section {
+    padding: 2rem 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.feature-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.feature-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--client-navy);
+    margin-bottom: 0.75rem;
+}
+
+.feature-description {
+    font-size: 0.9375rem;
+    color: var(--gray-600);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.feature-link {
+    color: var(--client-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.15s ease;
+}
+
+.feature-link:hover {
+    color: var(--client-primary-blue);
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 4rem 0;
+    margin-top: 2rem;
+}
+
+.cta-content {
+    background: linear-gradient(135deg, var(--client-blue) 0%, var(--client-primary-blue) 100%);
+    border-radius: 16px;
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--white);
+}
+
+.cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-description {
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-primary-large {
+    padding: 1rem 2.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--client-blue);
+    background-color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--white);
+    border-top: 1px solid var(--gray-200);
+    padding: 2rem 0;
+}
+
+.footer-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    color: var(--gray-600);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.15s ease;
+}
+
+.footer-link:hover {
+    color: var(--client-navy);
+}
+
+.footer-copyright {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.footer-disclaimer {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: #FF8C00;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background-color: #FFF4E6;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .nav-menu {
+        width: 100%;
+        order: 3;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-content {
+        padding: 3rem 1.5rem;
+    }
+
+    .cta-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1rem;
+    }
+
+    .login-card {
+        padding: 1.5rem;
+    }
+
+    .content-wrapper {
+        padding: 0 1rem;
+    }
+
+    .hero-section {
+        padding: 2rem 0 1.5rem;
+    }
 }
