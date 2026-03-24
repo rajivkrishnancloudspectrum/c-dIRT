@@ -1,82 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Immersive Chat</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Chat</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body class="app-page">
 
-<header>🤖 AI Support (Immersive)</header>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">My App</div>
 
-<div id="chatContainer"></div>
+            <div class="nav">
+                <a href="#" class="nav-link active">Chat</a>
+            </div>
 
-<!-- ✅ Your JS logic -->
-<script>
-  // Salesforce Ready Event
-  window.addEventListener("onEmbeddedMessagingReady", () => {
-    console.log("✅ Salesforce Ready Event Fired");
+            <div class="user-section">
+                <span id="userEmail">user@example.com</span>
+                <button id="logoutBtn" class="btn-icon">⎋</button>
+            </div>
+        </div>
+    </div>
 
-    const api = window.embeddedservice_bootstrap?.utilAPI;
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+        <div class="welcome">
+            <h1>Welcome</h1>
+            <p>Starting your chat experience...</p>
+        </div>
+    </div>
 
-    if (api) {
-      console.log("🚀 Launching Chat");
-      api.launchChat();
+    <script src="app.js"></script>
 
-      setTimeout(moveChat, 1200);
-    }
-  });
+    <!-- Salesforce Embedded Messaging -->
+    <script type='text/javascript'>
+        function initEmbeddedMessaging() {
+            try {
+                if (typeof embeddedservice_bootstrap !== 'undefined') {
+                    embeddedservice_bootstrap.settings.language = 'en_US';
+                    embeddedservice_bootstrap.settings.hideChatButton = true;
 
-  function moveChat() {
-    const container = document.getElementById("chatContainer");
+                    embeddedservice_bootstrap.init(
+                        '00DTA00000B1e6j',
+                        'Web_AI_Agent_V2',
+                        'https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034',
+                        {
+                            scrt2URL: 'https://charlesdean--partialcop.sandbox.my.salesforce-scrt.com'
+                        }
+                    );
 
-    const frame =
-      document.querySelector("iframe.embeddedMessagingFrame") ||
-      document.querySelector("iframe");
-
-    if (frame && container) {
-      console.log("✅ Moving chat into container");
-
-      container.appendChild(frame);
-
-      setTimeout(() => {
-        frame.classList.add("chat-ready");
-      }, 100);
-
-    } else {
-      console.log("⏳ Retrying iframe...");
-      setTimeout(moveChat, 500);
-    }
-  }
-</script>
-
-<!-- ✅ Salesforce Init -->
-<script>
-  function initEmbeddedMessaging() {
-    try {
-      embeddedservice_bootstrap.settings.language = 'en_US';
-      embeddedservice_bootstrap.settings.hideChatButton = true;
-
-      embeddedservice_bootstrap.init(
-        '00DTA00000B1e6j',
-        'Web_AI_Agent_V2',
-        'https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034',
-        {
-          scrt2URL: 'https://charlesdean--partialcop.sandbox.my.salesforce-scrt.com'
+                    // Auto launch chat
+                    embeddedservice_bootstrap.utilAPI.launchChat()
+                        .then(() => console.log('Chat launched'))
+                        .catch(err => console.warn(err));
+                }
+            } catch (err) {
+                console.error('Error loading Embedded Messaging:', err);
+            }
         }
-      );
+    </script>
 
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  }
-</script>
-
-<!-- ✅ Load Salesforce script LAST -->
-<script
-  src="https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js"
-  onload="initEmbeddedMessaging()">
-</script>
+    <script type='text/javascript'
+        src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js'
+        onload='initEmbeddedMessaging()'>
+    </script>
 
 </body>
 </html>
