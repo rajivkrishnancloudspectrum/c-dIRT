@@ -1,44 +1,98 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Variables */
+:root {
+    --primary: #2563eb;
+    --secondary: #1e40af;
+    --text: #1f2937;
+    --bg: #f9fafb;
+    --white: #ffffff;
+    --border: #e5e7eb;
+}
+
+/* Body */
 body {
-  margin: 0;
-  font-family: Arial;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
-header {
-  height: 60px;
-  background: #111;
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
 }
 
-#chatContainer {
-  width: 100%;
-  height: calc(100vh - 60px);
-  overflow: hidden;
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
 }
 
-/* Hide initially */
-iframe {
-  opacity: 0;
+/* Logo */
+.logo {
+    font-weight: bold;
+    font-size: 18px;
 }
 
-/* Smooth fade */
-.chat-ready {
-  opacity: 1 !important;
-  transition: opacity 0.3s ease;
+/* Nav */
+.nav {
+    display: flex;
+    gap: 10px;
 }
 
-/* Immersive mode */
-.embeddedMessagingFrame {
-  position: fixed !important;
-  top: 60px !important;
-  left: 0 !important;
+.nav-link {
+    text-decoration: none;
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+}
 
-  width: 100% !important;
-  height: calc(100vh - 60px) !important;
+.nav-link.active {
+    background: var(--primary);
+    color: white;
+}
 
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+/* User */
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Button */
+.btn-icon {
+    border: 1px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 50%;
+}
+
+/* Chat Container */
+.chat-container {
+    position: fixed;
+    top: 60px;
+    bottom: 0;
+    width: 100%;
+    background: white;
+}
+
+/* Welcome */
+.welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
