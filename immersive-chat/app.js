@@ -2,16 +2,16 @@
 function moveChatToContainer() {
     const container = document.getElementById('chatContainer');
 
-    const chatElements =
+    const chatElement =
         document.querySelector('.embeddedMessagingFrame') ||
         document.querySelector('.embeddedServiceSidebar') ||
         document.querySelector('embeddedservice-chat-header');
 
-    if (chatElements && container) {
-        container.appendChild(chatElements);
+    if (chatElement && container) {
+        container.innerHTML = ''; // remove welcome screen
+        container.appendChild(chatElement);
 
-        // Make it full screen
-        chatElements.classList.add('chat-ready');
+        chatElement.classList.add('chat-ready');
 
         console.log('✅ Chat moved into container');
     } else {
@@ -19,5 +19,19 @@ function moveChatToContainer() {
     }
 }
 
-// Run after slight delay
-setTimeout(moveChatToContainer, 1000);
+
+// ✅ Correct lifecycle handling
+window.addEventListener("onEmbeddedMessagingReady", () => {
+    console.log("✅ Messaging Ready");
+
+    setTimeout(() => {
+        embeddedservice_bootstrap.utilAPI.launchChat()
+            .then(() => {
+                console.log("✅ Chat launched");
+
+                // 👉 Move ONLY after launch
+                setTimeout(moveChatToContainer, 500);
+            })
+            .catch(err => console.error("Launch failed:", err));
+    }, 300);
+});
