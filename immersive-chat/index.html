@@ -14,7 +14,9 @@
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
-                embeddedservice_bootstrap.settings.hideChatButton = true; 
+
+                // ✅ Correct setting to hide the FAB button on load
+                embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
 
                 embeddedservice_bootstrap.init(
                     '00DTA00000B1e6j',
@@ -25,50 +27,24 @@
                     }
                 );
 
-                // Aggressive Auto-Launch Loop
-                let launchTimer = setInterval(() => {
-                    if (typeof embeddedservice_bootstrap.utilAPI !== 'undefined') {
-                        embeddedservice_bootstrap.utilAPI.launchChat()
-                            .then(() => {
-                                clearInterval(launchTimer);
-                                console.log("Chat Forced Open Successfully");
-                                setupFullPageUI();
-                            })
-                            .catch(() => {
-                                // Keep retrying every 200ms until the API is ready
-                                console.log("Waiting for API handshake...");
-                            });
-                    }
-                }, 200);
-
-                // Stop trying after 10 seconds to prevent infinite loops
-                setTimeout(() => clearInterval(launchTimer), 10000);
-
             } catch (err) {
                 console.error('Initialization Error:', err);
             }
-        };
-
-        function setupFullPageUI() {
-            const container = document.getElementById('chatContainer');
-            // Select all possible Salesforce UI pieces
-            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
-            
-            if (sfElements.length > 0) {
-                sfElements.forEach(el => {
-                    container.appendChild(el); 
-                    el.classList.add('chat-ready');
-                });
-            } else {
-                // If launch returned success but DOM isn't ready, retry quickly
-                setTimeout(setupFullPageUI, 100);
-            }
         }
+
+        // ✅ Auto-launch using the official event — fires when the API is ready
+        window.addEventListener('onEmbeddedMessagingReady', () => {
+            console.log('Embedded Messaging Ready — launching chat...');
+            embeddedservice_bootstrap.utilAPI.launchChat()
+                .then(() => console.log('Chat launched successfully'))
+                .catch(err => console.error('launchChat failed:', err));
+        });
     </script>
 
-    <script type='text/javascript' 
-            src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js' 
+    <script type='text/javascript'
+            src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js'
             onload='initEmbeddedMessaging()'>
     </script>
+
 </body>
 </html>
