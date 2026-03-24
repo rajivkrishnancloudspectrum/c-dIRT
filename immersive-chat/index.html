@@ -12,21 +12,19 @@
 
     <script type='text/javascript'>
 
-        // 1️⃣ API is ready — hide the FAB button
-        window.addEventListener('onEmbeddedMessagingReady', () => {
-            console.log('onEmbeddedMessagingReady — hiding button...');
-            embeddedservice_bootstrap.utilAPI.hideChatButton();
-        });
-
-        // 2️⃣ Button exists in DOM — per docs, this is the correct event to call launchChat()
+        // ✅ Both hideChatButton() and launchChat() require onEmbeddedMessagingButtonCreated
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-            console.log('onEmbeddedMessagingButtonCreated — launching chat...');
+            console.log('onEmbeddedMessagingButtonCreated — hiding button and launching chat...');
+
+            // Hide the FAB first
+            embeddedservice_bootstrap.utilAPI.hideChatButton();
+
+            // Then auto-launch
             embeddedservice_bootstrap.utilAPI.launchChat()
                 .then(() => console.log('Chat launched successfully'))
                 .catch(err => console.error('launchChat failed:', err));
         });
 
-        // 3️⃣ Initialize — listeners are already registered above
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
