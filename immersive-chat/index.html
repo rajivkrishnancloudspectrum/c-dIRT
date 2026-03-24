@@ -3,18 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Lucy Support - Full Screen</title>
+    <title>Lucy Chat Full Screen</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div id="loadingOverlay" class="immersive-welcome">
-        <div class="immersive-welcome-content">
-            <div class="loading-spinner"></div>
-            <h1>Connecting to Lucy...</h1>
-            <p>Setting up your secure session.</p>
-        </div>
-    </div>
 
     <div id="chatContainer"></div>
 
@@ -33,43 +25,42 @@
                     }
                 );
 
-                // FIX: Use 'onEmbeddedMessagingConversationButtonCreated' 
-                // This ensures the API is actually ready to be called.
-                window.addEventListener("onEmbeddedMessagingConversationButtonCreated", () => {
-                    console.log("MIAW Engine Ready. Launching...");
-                    
-                    // Small delay to ensure the utilAPI is fully mapped
-                    setTimeout(() => {
+                // Aggressive Auto-Launch Loop
+                let launchTimer = setInterval(() => {
+                    if (typeof embeddedservice_bootstrap.utilAPI !== 'undefined') {
                         embeddedservice_bootstrap.utilAPI.launchChat()
                             .then(() => {
-                                console.log("Chat Launched.");
+                                clearInterval(launchTimer);
+                                console.log("Chat Forced Open Successfully");
                                 setupFullPageUI();
                             })
-                            .catch((err) => {
-                                console.error("Launch failed:", err);
+                            .catch(() => {
+                                // Keep retrying every 200ms until the API is ready
+                                console.log("Waiting for API handshake...");
                             });
-                    }, 200);
-                });
+                    }
+                }, 200);
+
+                // Stop trying after 10 seconds to prevent infinite loops
+                setTimeout(() => clearInterval(launchTimer), 10000);
 
             } catch (err) {
-                console.error('Error loading Embedded Messaging: ', err);
+                console.error('Initialization Error:', err);
             }
         };
 
         function setupFullPageUI() {
-            // Salesforce MIAW components often live in the Shadow DOM or root.
-            // We look for the main container class.
-            const sfFrame = document.querySelector('.embeddedMessagingFrame');
-            const loader = document.getElementById('loadingOverlay');
+            const container = document.getElementById('chatContainer');
+            // Select all possible Salesforce UI pieces
+            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
             
-            if (sfFrame) {
-                sfFrame.classList.add('chat-ready');
-                
-                // Fade out the loader
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
+            if (sfElements.length > 0) {
+                sfElements.forEach(el => {
+                    container.appendChild(el); 
+                    el.classList.add('chat-ready');
+                });
             } else {
-                // If the frame hasn't rendered yet, check again in 100ms
+                // If launch returned success but DOM isn't ready, retry quickly
                 setTimeout(setupFullPageUI, 100);
             }
         }

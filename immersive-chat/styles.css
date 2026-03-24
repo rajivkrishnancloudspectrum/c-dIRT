@@ -1,78 +1,61 @@
-/* Base Page Setup */
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* Base Reset */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
 
-/* 1. HIDE THE DEFAULT BUTTON AT ALL COSTS */
-/* We target the container and the button itself */
+body, html {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+/* 1. HIDE THE DEFAULT BUTTON IMMEDIATELY */
+.embeddedMessagingConversationButton, 
 .embeddedMessagingConversationButtonContainer,
-.embeddedMessagingConversationButton,
-[class*="embeddedMessagingConversationButton"] {
+[class*="embeddedMessagingConversationButton"],
+button[data-type="fab"] {
     display: none !important;
     visibility: hidden !important;
-    pointer-events: none !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
-/* 2. FORCE THE CHAT TO FILL THE SCREEN */
-/* Salesforce uses .embeddedMessagingFrame as the primary wrapper */
-.embeddedMessagingFrame {
+/* 2. THE CONTAINER */
+#chatContainer {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+}
+
+/* 3. THE NUCLEAR FULL-SCREEN OVERRIDES */
+.embeddedMessagingFrame, 
+.embeddedServiceSidebar,
+embeddedservice-chat-header,
+.embeddedServiceSidebar.layout-docked,
+.embeddedServiceSidebar.layout-float {
     position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
+    inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    z-index: 9999 !important;
+    margin: 0 !important;
     border: none !important;
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-}
-
-/* This is applied via JS once the frame is detected */
-.chat-ready {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    visibility: visible !important;
     opacity: 1 !important;
 }
 
-/* 3. LOADING OVERLAY STYLES */
-.immersive-welcome {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    z-index: 10000;
-    transition: opacity 0.5s ease;
-    text-align: center;
-}
-
-.immersive-welcome h1 {
-    color: #1a1a1a;
-    font-size: 1.5rem;
-    margin-top: 20px;
-}
-
-.immersive-welcome p {
-    color: #666;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0176D3; /* Salesforce Blue */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin { 
-    100% { transform: rotate(360deg); } 
+/* Force the internal iframe to scale to the edges */
+.embeddedMessagingFrame iframe {
+    width: 100% !important;
+    height: 100% !important;
 }
