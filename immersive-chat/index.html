@@ -3,26 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Immersive Chat - Lucy Next Gen</title>
+    <title>Lucy Support - Full Screen</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="immersive-chat-page">
-    
-    <div class="immersive-header">
-        <div class="immersive-header-content">
-            <div class="immersive-brand">
-                <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/client_software_logo.svg" alt="client" class="client-logo-img">
-            </div>
-            <div class="immersive-nav">
-                <a href="#" class="immersive-link">Dashboard</a>
-                <a href="#" class="immersive-link">Conversation</a>
-                <a href="#" class="immersive-link active">Immersive</a>
-            </div>
-            <div class="immersive-user">
-                <span class="user-email-mini">client@salesforce.com</span>
-            </div>
-        </div>
-    </div>
+<body>
 
     <div id="loadingOverlay" class="immersive-welcome">
         <div class="immersive-welcome-content">
@@ -32,7 +16,7 @@
         </div>
     </div>
 
-    <div class="immersive-container" id="chatContainer"></div>
+    <div id="chatContainer"></div>
 
     <script type='text/javascript'>
         function initEmbeddedMessaging() {
@@ -49,14 +33,14 @@
                     }
                 );
 
-                // --- THE HANDSHAKE: Wait for Salesforce to be Ready ---
+                // --- THE FIX: Listen for the "Ready" Handshake ---
                 window.addEventListener("onEmbeddedMessagingReady", () => {
-                    console.log("Salesforce Handshake Complete. Launching...");
+                    console.log("Handshake Complete. Launching Chat...");
                     
                     embeddedservice_bootstrap.utilAPI.launchChat()
                         .then(() => {
-                            console.log("Chat Auto-Launched.");
-                            markChatAsReady();
+                            console.log("Chat Opened Successfully.");
+                            setupFullPageUI();
                         })
                         .catch((err) => {
                             console.error("Launch failed:", err);
@@ -64,29 +48,27 @@
                 });
 
             } catch (err) {
-                console.error('Initialization Error:', err);
+                console.error('Error loading Embedded Messaging: ', err);
             }
         };
 
-        function markChatAsReady() {
+        function setupFullPageUI() {
+            // Find the Frame and move it
+            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
             const container = document.getElementById('chatContainer');
             const loader = document.getElementById('loadingOverlay');
             
-            // Grab any injected Salesforce UI
-            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
-            
             if (sfElements.length > 0) {
                 sfElements.forEach(el => {
-                    container.appendChild(el); 
+                    container.appendChild(el);
                     el.classList.add('chat-ready');
                 });
 
-                // Smooth transition: Hide loader
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
             } else {
-                // Retry until elements appear in DOM
-                setTimeout(markChatAsReady, 200);
+                // If it opened but elements aren't in DOM yet, retry once
+                setTimeout(setupFullPageUI, 200);
             }
         }
     </script>

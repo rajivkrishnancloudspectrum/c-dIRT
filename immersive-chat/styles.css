@@ -1,103 +1,70 @@
-:root {
-    --client-blue: #13B5EA;
-    --client-navy: #213B55;
-    --white: #FFFFFF;
-    --gray-100: #F3F4F6;
-    --gray-200: #E5E7EB;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+/* Base Page Setup */
 body, html {
+    margin: 0;
+    padding: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-color: var(--white);
-    font-family: -apple-system, system-ui, sans-serif;
+    background: #fff;
+    font-family: sans-serif;
 }
 
-/* 1. HEADER STYLES */
-.immersive-header {
-    height: 60px;
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    position: relative;
-    z-index: 10;
-}
-
-.immersive-header-content {
-    width: 100%;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.client-logo-img { height: 30px; }
-
-.immersive-nav { display: flex; gap: 1rem; }
-.immersive-link { text-decoration: none; color: var(--client-navy); font-weight: 500; font-size: 0.9rem; padding: 5px 10px; border-radius: 4px; }
-.immersive-link.active { color: var(--client-blue); background: rgba(19, 181, 234, 0.1); }
-
-/* 2. HIDE SALESFORCE BUBBLE */
-.embeddedMessagingConversationButton, 
+/* 1. FORCE HIDE THE BUTTON (Shadow DOM Friendly) */
+.embeddedMessagingConversationButton,
+.embeddedMessagingConversationButtonContainer,
 [class*="embeddedMessagingConversationButton"],
 button[data-type="fab"] {
     display: none !important;
     visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
-/* 3. FULL PAGE CONTAINER (Fills space below header) */
-.immersive-container {
-    position: absolute;
-    top: 60px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--white);
-    z-index: 1;
-}
-
-/* 4. FORCE CHAT FRAME TO FILL CONTAINER */
+/* 2. FORCE FULL SCREEN FRAME */
 .embeddedMessagingFrame, 
 .embeddedServiceSidebar,
 embeddedservice-chat-header {
-    position: absolute !important;
+    position: fixed !important;
     inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 100vw !important;
+    height: 100vh !important;
     max-width: 100% !important;
     max-height: 100% !important;
     border: none !important;
-    opacity: 0;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: 999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 0; 
     transition: opacity 0.5s ease;
 }
 
-.chat-ready { opacity: 1 !important; }
+.chat-ready {
+    opacity: 1 !important;
+}
 
-/* 5. LOADING OVERLAY */
+/* 3. LOADING OVERLAY */
 .immersive-welcome {
-    position: absolute;
-    top: 60px; /* Below header */
-    inset: 60px 0 0 0;
-    background: white;
+    position: fixed;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 5;
+    background: #ffffff;
+    z-index: 1000;
     transition: opacity 0.5s ease;
 }
 
 .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid var(--gray-100);
-    border-top: 3px solid var(--client-blue);
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #13B5EA;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
