@@ -4,31 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Lucy Chat Full Screen</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        /* Hide FAB */
+        .embeddedMessagingConversationButton,
+        .embeddedMessagingConversationButtonContainer {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
-    <div id="chatContainer"></div>
-
     <script type='text/javascript'>
 
-        // ✅ Both hideChatButton() and launchChat() require onEmbeddedMessagingButtonCreated
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-            console.log('onEmbeddedMessagingButtonCreated — hiding button and launching chat...');
-
-            // Hide the FAB first
+            console.log('Button created — hiding FAB and launching chat...');
             embeddedservice_bootstrap.utilAPI.hideChatButton();
-
-            // Then auto-launch
             embeddedservice_bootstrap.utilAPI.launchChat()
-                .then(() => console.log('Chat launched successfully'))
+                .then(() => {
+                    console.log('Chat launched — inspecting DOM...');
+
+                    // Give SF a moment to render, then log exactly what's in the DOM
+                    setTimeout(() => {
+                        const all = document.querySelectorAll('*');
+                        const sfEls = [...all].filter(el => 
+                            el.className && typeof el.className === 'string' && 
+                            el.className.includes('embedded')
+                        );
+                        sfEls.forEach(el => {
+                            const rect = el.getBoundingClientRect();
+                            console.log(`TAG: ${el.tagName} | CLASS: ${el.className} | RECT: top=${rect.top} left=${rect.left} w=${rect.width} h=${rect.height}`);
+                        });
+
+                        // Also log iframes
+                        document.querySelectorAll('iframe').forEach(f => {
+                            const rect = f.getBoundingClientRect();
+                            console.log(`IFRAME: src=${f.src} | RECT: top=${rect.top} left=${rect.left} w=${rect.width} h=${rect.height} | style=${f.style.cssText}`);
+                        });
+                    }, 2000);
+                })
                 .catch(err => console.error('launchChat failed:', err));
         });
 
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
-
                 embeddedservice_bootstrap.init(
                     '00DTA00000B1e6j',
                     'Web_AI_Agent_V2',
@@ -37,7 +65,6 @@
                         scrt2URL: 'https://charlesdean--partialcop.sandbox.my.salesforce-scrt.com'
                     }
                 );
-
             } catch (err) {
                 console.error('Initialization Error:', err);
             }
