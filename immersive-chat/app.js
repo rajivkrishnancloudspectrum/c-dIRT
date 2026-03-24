@@ -1,48 +1,37 @@
-function startPolling() {
-  let attempts = 0;
+// ✅ BEST PRACTICE: Use Salesforce Ready Event
+window.addEventListener("onEmbeddedMessagingReady", () => {
+  console.log("✅ Salesforce Ready Event Fired");
 
-  const interval = setInterval(() => {
-    const api = window.embeddedservice_bootstrap?.utilAPI;
+  const api = window.embeddedservice_bootstrap.utilAPI;
 
-    if (api) {
-      clearInterval(interval);
+  if (api) {
+    console.log("🚀 Launching Chat");
 
-      console.log("✅ API Ready");
+    api.launchChat();
 
-      // Launch chat automatically
-      api.launchChat();
-
-      // Move chat after render
-      setTimeout(moveChat, 1200);
-    }
-
-    // Timeout (~10 sec)
-    if (attempts++ > 50) {
-      clearInterval(interval);
-      console.warn("❌ API not found");
-    }
-
-  }, 200);
-}
+    // Move chat after render
+    setTimeout(moveChat, 1200);
+  }
+});
 
 function moveChat() {
-  const container = document.getElementById('chatContainer');
+  const container = document.getElementById("chatContainer");
 
   const frame =
-    document.querySelector('iframe.embeddedMessagingFrame') ||
-    document.querySelector('iframe[src*="embeddedService"]');
+    document.querySelector("iframe.embeddedMessagingFrame") ||
+    document.querySelector("iframe[src*='embeddedService']");
 
   if (frame && container) {
-    console.log("✅ Moving chat");
+    console.log("✅ Moving chat into container");
 
     container.appendChild(frame);
 
     setTimeout(() => {
-      frame.classList.add('chat-ready');
+      frame.classList.add("chat-ready");
     }, 100);
 
   } else {
-    console.log("⏳ Retrying...");
+    console.log("⏳ Retrying iframe...");
     setTimeout(moveChat, 500);
   }
 }
