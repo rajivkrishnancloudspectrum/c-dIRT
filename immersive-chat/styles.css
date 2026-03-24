@@ -18,15 +18,18 @@ header {
   overflow: hidden;
 }
 
+/* Hide initially */
 iframe {
   opacity: 0;
 }
 
+/* Smooth fade */
 .chat-ready {
   opacity: 1 !important;
   transition: opacity 0.3s ease;
 }
 
+/* Immersive mode */
 .embeddedMessagingFrame {
   position: fixed !important;
   top: 60px !important;
@@ -35,8 +38,7 @@ iframe {
   width: 100% !important;
   height: calc(100vh - 60px) !important;
 
+  border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  border: none !important;
-  max-height: none !important;
 }
