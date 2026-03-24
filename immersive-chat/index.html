@@ -11,7 +11,46 @@
 
 <div id="chatContainer"></div>
 
-<!-- Salesforce Init -->
+<!-- ✅ Your JS logic -->
+<script>
+  // Salesforce Ready Event
+  window.addEventListener("onEmbeddedMessagingReady", () => {
+    console.log("✅ Salesforce Ready Event Fired");
+
+    const api = window.embeddedservice_bootstrap?.utilAPI;
+
+    if (api) {
+      console.log("🚀 Launching Chat");
+      api.launchChat();
+
+      setTimeout(moveChat, 1200);
+    }
+  });
+
+  function moveChat() {
+    const container = document.getElementById("chatContainer");
+
+    const frame =
+      document.querySelector("iframe.embeddedMessagingFrame") ||
+      document.querySelector("iframe");
+
+    if (frame && container) {
+      console.log("✅ Moving chat into container");
+
+      container.appendChild(frame);
+
+      setTimeout(() => {
+        frame.classList.add("chat-ready");
+      }, 100);
+
+    } else {
+      console.log("⏳ Retrying iframe...");
+      setTimeout(moveChat, 500);
+    }
+  }
+</script>
+
+<!-- ✅ Salesforce Init -->
 <script>
   function initEmbeddedMessaging() {
     try {
@@ -33,8 +72,7 @@
   }
 </script>
 
-<script src="app.js"></script>
-
+<!-- ✅ Load Salesforce script LAST -->
 <script
   src="https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js"
   onload="initEmbeddedMessaging()">
