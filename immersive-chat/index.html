@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Immersive Salesforce Chat</title>
+  <title>Immersive Chat</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<header>
-  🤖 AI Support (Immersive Mode)
-</header>
+<header>🤖 AI Support (Immersive)</header>
 
 <div id="chatContainer"></div>
 
-<!-- Salesforce Script -->
+<!-- Salesforce Init -->
 <script>
   function initEmbeddedMessaging() {
     try {
       embeddedservice_bootstrap.settings.language = 'en_US';
-
-      // Hide bubble
       embeddedservice_bootstrap.settings.hideChatButton = true;
 
       embeddedservice_bootstrap.init(
@@ -31,21 +27,18 @@
         }
       );
 
-      // Start immersive logic
-      startPolling();
-
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
     }
   }
 </script>
 
+<script src="app.js"></script>
+
 <script
   src="https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js"
   onload="initEmbeddedMessaging()">
 </script>
-
-<script src="app.js"></script>
 
 </body>
 </html>
