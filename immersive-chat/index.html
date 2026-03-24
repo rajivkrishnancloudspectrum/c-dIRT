@@ -12,7 +12,7 @@
         <div class="immersive-welcome-content">
             <div class="loading-spinner"></div>
             <h1>Connecting to Lucy...</h1>
-            <p>Setting up your secure full-screen session.</p>
+            <p>Setting up your secure session.</p>
         </div>
     </div>
 
@@ -33,18 +33,22 @@
                     }
                 );
 
-                // --- THE FIX: Listen for the "Ready" Handshake ---
-                window.addEventListener("onEmbeddedMessagingReady", () => {
-                    console.log("Handshake Complete. Launching Chat...");
+                // FIX: Use 'onEmbeddedMessagingConversationButtonCreated' 
+                // This ensures the API is actually ready to be called.
+                window.addEventListener("onEmbeddedMessagingConversationButtonCreated", () => {
+                    console.log("MIAW Engine Ready. Launching...");
                     
-                    embeddedservice_bootstrap.utilAPI.launchChat()
-                        .then(() => {
-                            console.log("Chat Opened Successfully.");
-                            setupFullPageUI();
-                        })
-                        .catch((err) => {
-                            console.error("Launch failed:", err);
-                        });
+                    // Small delay to ensure the utilAPI is fully mapped
+                    setTimeout(() => {
+                        embeddedservice_bootstrap.utilAPI.launchChat()
+                            .then(() => {
+                                console.log("Chat Launched.");
+                                setupFullPageUI();
+                            })
+                            .catch((err) => {
+                                console.error("Launch failed:", err);
+                            });
+                    }, 200);
                 });
 
             } catch (err) {
@@ -53,22 +57,20 @@
         };
 
         function setupFullPageUI() {
-            // Find the Frame and move it
-            const sfElements = document.querySelectorAll('.embeddedMessagingFrame, .embeddedServiceSidebar, embeddedservice-chat-header');
-            const container = document.getElementById('chatContainer');
+            // Salesforce MIAW components often live in the Shadow DOM or root.
+            // We look for the main container class.
+            const sfFrame = document.querySelector('.embeddedMessagingFrame');
             const loader = document.getElementById('loadingOverlay');
             
-            if (sfElements.length > 0) {
-                sfElements.forEach(el => {
-                    container.appendChild(el);
-                    el.classList.add('chat-ready');
-                });
-
+            if (sfFrame) {
+                sfFrame.classList.add('chat-ready');
+                
+                // Fade out the loader
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
             } else {
-                // If it opened but elements aren't in DOM yet, retry once
-                setTimeout(setupFullPageUI, 200);
+                // If the frame hasn't rendered yet, check again in 100ms
+                setTimeout(setupFullPageUI, 100);
             }
         }
     </script>
