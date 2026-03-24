@@ -3,65 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immersive Chat</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Immersive Chat - Lucy Next Gen</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
-
-<body class="app-page">
-
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">My App</div>
-
-            <div class="nav">
-                <a href="#" class="nav-link active">Chat</a>
+<body class="immersive-chat-page">
+    <div class="immersive-header">
+        <div class="immersive-header-content">
+            <div class="immersive-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/client_software_logo.svg"
+                     alt="client"
+                     class="client-logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="client-logo-fallback" style="display: none;">
+                    <span class="client-logo-text">client</span>
+                </div>
+            </div>
+            <div class="immersive-nav">
+                <a href="/dashboard" class="immersive-link">Dashboard</a>
+                <a href="/conversation-first" class="immersive-link">Conversation</a>
+                <a href="/split-view" class="immersive-link">Split View</a>
+                <a href="/immersive-chat" class="immersive-link active">Immersive</a>
+            </div>
+            <div class="immersive-user">
+                <span class="user-email-mini">client@salesforce.com</span>
+                <button id="logoutBtn" class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Chat Container -->
-    <div class="chat-container" id="chatContainer">
-        <div class="welcome">
-            <h1>Welcome</h1>
-            <p>Starting your chat experience...</p>
+    <div class="educational-banner">
+        <div class="educational-banner-content">
+            <span class="educational-banner-icon">ℹ️</span>
+            <span class="educational-banner-text">Powered by Salesforce Embedded Service (Chat/Messaging). Frontend components and user experience flows have been architected strictly for educational demonstration.</span>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="immersive-container" id="chatContainer">
+        <div class="immersive-welcome">
+            <div class="immersive-welcome-content">
+                <div class="immersive-icon">💬</div>
+                <h1>Welcome to Lucy Next Gen Support</h1>
+                <p>Full-screen chat experience for seamless conversations</p>
+            </div>
+        </div>
+    </div>
 
-    <!-- Salesforce Embedded Messaging -->
+    <script src="/dashboard.js"></script>
+
+    <!-- Salesforce Embedded Messaging Integration -->
     <script type='text/javascript'>
+        // --- Configuration ---
+        const MAX_WAIT_TIME_MS = 10000;
+        const POLLING_INTERVAL_MS = 200;
+        let attempts = 0;
+
+        // --- 1. Polling Management Function ---
+        const startChatPolling = () => {
+            if (window.chatPoller) return;
+            window.chatPoller = setInterval(() => {
+                tryLaunchChat(window.chatPoller);
+            }, POLLING_INTERVAL_MS);
+        };
+
+        // --- 2. Main Launch Attempt Function (Polling Logic) ---
+        const tryLaunchChat = (pollHandle) => {
+            if (typeof embeddedservice_bootstrap === 'undefined' || typeof embeddedservice_bootstrap.utilAPI === 'undefined') {
+                 attempts++;
+                 if (attempts * POLLING_INTERVAL_MS > MAX_WAIT_TIME_MS) {
+                     clearInterval(pollHandle);
+                     console.error("Chat launch timed out. Embedded messaging bootstrap not loaded.");
+                 }
+                 return;
+            }
+
+            embeddedservice_bootstrap.utilAPI.launchChat()
+                .then(() => {
+                    console.log("Chat launched successfully via polling.");
+                    if (pollHandle) clearInterval(pollHandle);
+                })
+                .catch((err) => {
+                    attempts++;
+                    if (attempts * POLLING_INTERVAL_MS > MAX_WAIT_TIME_MS) {
+                        clearInterval(pollHandle);
+                        console.error("Chat launch timed out after init, reason:", err);
+                    } else if (!pollHandle) {
+                        console.log("First launch attempt failed. Starting readiness poll...");
+                        startChatPolling();
+                    } else if (err.message && !err.message.includes('API not available')) {
+                        console.warn("Unexpected chat launch error during polling:", err);
+                    }
+                });
+        };
+
+        // --- 3. Salesforce Initialization Function ---
         function initEmbeddedMessaging() {
             try {
                 if (typeof embeddedservice_bootstrap !== 'undefined') {
                     embeddedservice_bootstrap.settings.language = 'en_US';
                     embeddedservice_bootstrap.settings.hideChatButton = true;
 
-                    embeddedservice_bootstrap.init(
-                        '00DTA00000B1e6j',
-                        'Web_AI_Agent_V2',
-                        'https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034',
-                        {
-                            scrt2URL: 'https://charlesdean--partialcop.sandbox.my.salesforce-scrt.com'
-                        }
-                    );
+                   <script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-                    // Auto launch chat
-                    embeddedservice_bootstrap.utilAPI.launchChat()
-                        .then(() => console.log('Chat launched'))
-                        .catch(err => console.warn(err));
+			embeddedservice_bootstrap.init(
+				'00DTA00000B1e6j',
+				'Web_AI_Agent_V2',
+				'https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034',
+				{
+					scrt2URL: 'https://charlesdean--partialcop.sandbox.my.salesforce-scrt.com'
+				}
+			);
+
+                    tryLaunchChat();
+
+                } else {
+                    console.error("initEmbeddedMessaging called but embeddedservice_bootstrap is undefined.");
                 }
+
             } catch (err) {
-                console.error('Error loading Embedded Messaging:', err);
+                console.error('Error loading Embedded Messaging: ', err);
+            }
+        };
+
+        // Force chat into the container after it loads
+        function moveChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            const embeddedFrame = document.querySelector('.embeddedMessagingFrame') ||
+                                 document.querySelector('embeddedservice-chat-header') ||
+                                 document.querySelector('.embeddedServiceSidebar');
+
+            if (embeddedFrame && chatContainer) {
+                chatContainer.appendChild(embeddedFrame);
+
+                setTimeout(() => {
+                    embeddedFrame.classList.add('chat-ready');
+                    document.querySelectorAll('.embeddedMessagingFrame, embeddedservice-chat-header, .embeddedServiceSidebar, .embeddedMessagingConversationButton').forEach(el => {
+                        el.classList.add('chat-ready');
+                    });
+                }, 100);
+
+                console.log('Chat moved to container and shown');
+            } else {
+                setTimeout(moveChat, 300);
             }
         }
+
+        setTimeout(moveChat, 1000);
     </script>
 
-    <script type='text/javascript'
-        src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js'
-        onload='initEmbeddedMessaging()'>
-    </script>
-
+    <script type='text/javascript' src='https://client--afperf.sandbox.my.site.com/ESWclientServiceAgent1772180054913/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
