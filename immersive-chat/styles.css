@@ -1,9 +1,8 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
 }
 
-/* Header */
 header {
   height: 60px;
   background: #111;
@@ -13,26 +12,21 @@ header {
   padding: 0 20px;
 }
 
-/* Chat container */
 #chatContainer {
   width: 100%;
   height: calc(100vh - 60px);
   overflow: hidden;
-  position: relative;
 }
 
-/* Initial hidden state */
 iframe {
   opacity: 0;
 }
 
-/* Smooth fade */
 .chat-ready {
   opacity: 1 !important;
   transition: opacity 0.3s ease;
 }
 
-/* Immersive full screen */
 .embeddedMessagingFrame {
   position: fixed !important;
   top: 60px !important;
