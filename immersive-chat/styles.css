@@ -16,8 +16,6 @@ body, html {
     justify-content: center;
     width: 100vw;
     height: 100vh;
-    position: relative;
-    z-index: 10; /* above SF overlay */
 }
 
 #chat-container {
@@ -94,58 +92,40 @@ body, html {
     border-color: #0d1b2a;
 }
 
-/* ── V2: Full-screen chat shell ── */
-#v2-chat {
+/* ── V2: Embedded messaging container ── */
+/* Hidden by default — SF iframe renders inside here via targetElement */
+#embeddedMessagingContainer {
     display: none;
     position: fixed;
     inset: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 99999;
+    z-index: 9999;
+    background: #fff;
 }
 
-/* ── Salesforce overlay elements ── */
-
-/* The bootstrap renders a layout shell immediately on init() —
-   keep it behind v1 and invisible until chat actually opens */
-runtime_copilot-cwc-layout,
-[class*="runtime_copilot"],
-embeddedservice-boot,
-.embeddedServiceBootstrap {
-    z-index: 1 !important;
-    pointer-events: none !important;
+/* Shown when user launches chat */
+#embeddedMessagingContainer.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Hide FAB button completely */
-.embeddedMessagingConversationButton,
-.embeddedMessagingConversationButtonContainer,
-[class*="embeddedMessagingConversationButton"],
-[class*="fab"],
-button[data-type="fab"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* SF iframe — hidden by default, shown when chat opens via JS */
-.embeddedMessagingFrame {
-    display: none !important;
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    margin: 0 !important;
+/* SF iframe fills the container */
+#embeddedMessagingContainer #embedded-messaging,
+#embeddedMessagingContainer .embeddedMessagingFrame {
+    width: 100% !important;
+    height: 100% !important;
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    z-index: 99999 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
 }
 
-/* JS adds this class when chat opens to reveal the iframe */
-.embeddedMessagingFrame.chat-active {
-    display: block !important;
-    pointer-events: all !important;
+/* Hide FAB button */
+#embeddedMessagingConversationButton,
+.embeddedMessagingConversationButton,
+.embeddedMessagingConversationButtonContainer {
+    display: none !important;
 }

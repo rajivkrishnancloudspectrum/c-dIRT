@@ -28,99 +28,100 @@
         </div>
     </div>
 
-    <!-- V2: Full-screen chat shell (SF iframe renders here) -->
-    <div id="v2-chat"></div>
+    <!-- V2: Full-screen chat container — SF iframe renders inside here -->
+    <div id="embeddedMessagingContainer"></div>
 
     <script>
         // ── State ──────────────────────────────────────────────
         let pendingMessage = null;
-        let chatReady = false;
-        let messageSent = false;
+        let botGreetingSeen = false;
 
         // ── V1 → V2 transition ────────────────────────────────
         function showV2() {
-            // Reveal the SF iframe now that chat is open
-            const frame = document.querySelector('.embeddedMessagingFrame');
-            if (frame) frame.classList.add('chat-active');
-
             document.getElementById('v1-landing').style.display = 'none';
-            document.getElementById('v2-chat').style.display = 'block';
+            document.getElementById('embeddedMessagingContainer').classList.add('show');
         }
 
         function showV1() {
-            // Hide the SF iframe again
-            const frame = document.querySelector('.embeddedMessagingFrame');
-            if (frame) frame.classList.remove('chat-active');
-
-            document.getElementById('v2-chat').style.display = 'none';
+            document.getElementById('embeddedMessagingContainer').classList.remove('show');
             document.getElementById('v1-landing').style.display = 'flex';
         }
 
-        // ── Launch chat (called from v1 buttons / input) ──────
+        // ── Launch chat from V1 ───────────────────────────────
         function launchChatWithMessage(message) {
             if (message) {
                 console.log('📝 Captured message:', message);
                 pendingMessage = message;
-                messageSent = false;
+                botGreetingSeen = false;
             }
-
-            if (chatReady) {
-                embeddedservice_bootstrap.utilAPI.launchChat()
-                    .then(() => console.log('✅ Chat launched'))
-                    .catch(err => console.error('❌ launchChat failed:', err));
-            } else {
-                console.log('⏳ API not ready yet — will launch on ButtonCreated');
-            }
+            showV2();
+            embeddedservice_bootstrap.utilAPI.launchChat()
+                .then(() => console.log('✅ Chat launched'))
+                .catch(err => console.error('❌ launchChat failed:', err));
         }
 
-        // ── SF Event: Button created → hide FAB + auto-launch if pending ──
-        window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-            console.log('🔔 onEmbeddedMessagingButtonCreated — API ready');
-            chatReady = true;
+        // ── SF: Ready → set targetElement so iframe renders inside our container ──
+        window.addEventListener('onEmbeddedMessagingReady', () => {
+            console.log('✅ Embedded Messaging Ready');
 
-            embeddedservice_bootstrap.utilAPI.hideChatButton();
+            // ✅ Key: tell SF to render inside our container, not floating freely
+            embeddedservice_bootstrap.settings.targetElement =
+                document.body.querySelector('#embeddedMessagingContainer');
 
-            if (pendingMessage) {
-                embeddedservice_bootstrap.utilAPI.launchChat()
-                    .then(() => console.log('✅ Chat launched with pending message'))
-                    .catch(err => console.error('❌ launchChat failed:', err));
-            }
-        });
+            // ── Conversation opened ───────────────────────────
+            window.addEventListener('onEmbeddedMessagingConversationOpened', () => {
+                console.log('💬 Conversation opened');
+            });
 
-        // ── SF Event: Conversation opened → switch to V2 ─────
-        window.addEventListener('onEmbeddedMessagingConversationOpened', () => {
-            console.log('💬 Conversation opened — switching to V2');
-            showV2();
-        });
+            // ── Participant changed → chatbot joined → send message ──
+            // ✅ Key pattern from reference code: check role === "Chatbot" + operation === "add"
+            window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (event) => {
+                const rawPayload = event.detail?.conversationEntry?.entryPayload;
+                if (!rawPayload) return;
 
-        // ── SF Event: Bot message → send captured message ─────
-        window.addEventListener('onEmbeddedMessagingConversationEntry', (event) => {
-            const entry = event.detail?.conversationEntry;
-            if (!entry) return;
+                const parsed = JSON.parse(rawPayload);
+                const entry = parsed.entries?.[0];
 
-            const isAgentMessage = entry.entryType === 'Message' &&
-                                   entry.sender?.role !== 'EndUser';
+                console.log('👥 Participant:', entry?.participant?.role, '| Op:', entry?.operation);
 
-            if (isAgentMessage && pendingMessage && !messageSent) {
-                console.log('🤖 Bot greeted — sending:', pendingMessage);
-                messageSent = true;
-                embeddedservice_bootstrap.utilAPI.sendTextMessage(pendingMessage);
+                if (
+                    entry?.operation === 'add' &&
+                    entry?.participant?.role === 'Chatbot' &&
+                    pendingMessage &&
+                    !botGreetingSeen
+                ) {
+                    botGreetingSeen = true;
+                    console.log('🤖 Chatbot joined — sending in 1.5s:', pendingMessage);
+
+                    setTimeout(() => {
+                        if (pendingMessage) {
+                            embeddedservice_bootstrap.utilAPI.sendTextMessage(pendingMessage);
+                            console.log('📡 Message sent:', pendingMessage);
+                            pendingMessage = null;
+                        }
+                    }, 1500);
+                }
+            });
+
+            // ── Window closed → back to V1 ────────────────────
+            window.addEventListener('onEmbeddedMessagingWindowClosed', () => {
+                console.log('🔒 Chat closed — returning to V1');
                 pendingMessage = null;
-            }
+                botGreetingSeen = false;
+                showV1();
+            });
+
+            // ── Window minimized → show V1 underneath ─────────
+            window.addEventListener('onEmbeddedMessagingWindowMinimized', () => {
+                console.log('➖ Chat minimized');
+                showV1();
+            });
         });
 
-        // ── SF Event: Window closed → back to V1 ─────────────
-        window.addEventListener('onEmbeddedMessagingWindowClosed', () => {
-            console.log('🔒 Chat closed — returning to V1');
-            pendingMessage = null;
-            messageSent = false;
-            showV1();
-        });
-
-        // ── SF Event: Minimized → show V1 underneath ─────────
-        window.addEventListener('onEmbeddedMessagingWindowMinimized', () => {
-            console.log('➖ Chat minimized');
-            showV1();
+        // ── SF: Button created → hide FAB ─────────────────────
+        window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+            console.log('🔔 Button created — hiding FAB');
+            embeddedservice_bootstrap.utilAPI.hideChatButton();
         });
 
         // ── V1 UI events ──────────────────────────────────────
