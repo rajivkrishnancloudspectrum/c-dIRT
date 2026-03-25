@@ -16,6 +16,8 @@ body, html {
     justify-content: center;
     width: 100vw;
     height: 100vh;
+    position: relative;
+    z-index: 10; /* above SF overlay */
 }
 
 #chat-container {
@@ -99,11 +101,36 @@ body, html {
     inset: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999;
+    z-index: 99999;
 }
 
-/* SF iframe full screen */
+/* ── Salesforce overlay elements ── */
+
+/* The bootstrap renders a layout shell immediately on init() —
+   keep it behind v1 and invisible until chat actually opens */
+runtime_copilot-cwc-layout,
+[class*="runtime_copilot"],
+embeddedservice-boot,
+.embeddedServiceBootstrap {
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+
+/* Hide FAB button completely */
+.embeddedMessagingConversationButton,
+.embeddedMessagingConversationButtonContainer,
+[class*="embeddedMessagingConversationButton"],
+[class*="fab"],
+button[data-type="fab"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* SF iframe — hidden by default, shown when chat opens via JS */
 .embeddedMessagingFrame {
+    display: none !important;
     position: fixed !important;
     inset: 0 !important;
     width: 100vw !important;
@@ -117,8 +144,8 @@ body, html {
     z-index: 99999 !important;
 }
 
-/* Hide the FAB button */
-.embeddedMessagingConversationButton,
-.embeddedMessagingConversationButtonContainer {
-    display: none !important;
+/* JS adds this class when chat opens to reveal the iframe */
+.embeddedMessagingFrame.chat-active {
+    display: block !important;
+    pointer-events: all !important;
 }

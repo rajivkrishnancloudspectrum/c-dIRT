@@ -33,17 +33,25 @@
 
     <script>
         // ── State ──────────────────────────────────────────────
-        let pendingMessage = null;   // message captured from v1
-        let chatReady = false;       // true once onEmbeddedMessagingButtonCreated fires
-        let messageSent = false;     // guard: only send once per session
+        let pendingMessage = null;
+        let chatReady = false;
+        let messageSent = false;
 
         // ── V1 → V2 transition ────────────────────────────────
         function showV2() {
+            // Reveal the SF iframe now that chat is open
+            const frame = document.querySelector('.embeddedMessagingFrame');
+            if (frame) frame.classList.add('chat-active');
+
             document.getElementById('v1-landing').style.display = 'none';
             document.getElementById('v2-chat').style.display = 'block';
         }
 
         function showV1() {
+            // Hide the SF iframe again
+            const frame = document.querySelector('.embeddedMessagingFrame');
+            if (frame) frame.classList.remove('chat-active');
+
             document.getElementById('v2-chat').style.display = 'none';
             document.getElementById('v1-landing').style.display = 'flex';
         }
@@ -57,25 +65,21 @@
             }
 
             if (chatReady) {
-                // API already ready — launch immediately
                 embeddedservice_bootstrap.utilAPI.launchChat()
                     .then(() => console.log('✅ Chat launched'))
                     .catch(err => console.error('❌ launchChat failed:', err));
             } else {
-                // API not ready yet — will auto-launch once button is created
-                console.log('⏳ Chat API not ready yet, will launch on ButtonCreated');
+                console.log('⏳ API not ready yet — will launch on ButtonCreated');
             }
         }
 
-        // ── SF Event: Button created → hide FAB + launch ──────
+        // ── SF Event: Button created → hide FAB + auto-launch if pending ──
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
             console.log('🔔 onEmbeddedMessagingButtonCreated — API ready');
             chatReady = true;
 
-            // Hide the FAB
             embeddedservice_bootstrap.utilAPI.hideChatButton();
 
-            // If user already clicked something on v1, launch now
             if (pendingMessage) {
                 embeddedservice_bootstrap.utilAPI.launchChat()
                     .then(() => console.log('✅ Chat launched with pending message'))
@@ -83,30 +87,29 @@
             }
         });
 
-        // ── SF Event: Chat window opens → show V2 full screen ─
+        // ── SF Event: Conversation opened → switch to V2 ─────
         window.addEventListener('onEmbeddedMessagingConversationOpened', () => {
             console.log('💬 Conversation opened — switching to V2');
             showV2();
         });
 
-        // ── SF Event: Bot message received → send pending msg ─
+        // ── SF Event: Bot message → send captured message ─────
         window.addEventListener('onEmbeddedMessagingConversationEntry', (event) => {
             const entry = event.detail?.conversationEntry;
             if (!entry) return;
 
-            // Only trigger on agent/bot messages, not end user
             const isAgentMessage = entry.entryType === 'Message' &&
                                    entry.sender?.role !== 'EndUser';
 
             if (isAgentMessage && pendingMessage && !messageSent) {
-                console.log('🤖 Bot greeted — sending captured message:', pendingMessage);
+                console.log('🤖 Bot greeted — sending:', pendingMessage);
                 messageSent = true;
                 embeddedservice_bootstrap.utilAPI.sendTextMessage(pendingMessage);
                 pendingMessage = null;
             }
         });
 
-        // ── SF Event: Window closed → back to V1, reset state ─
+        // ── SF Event: Window closed → back to V1 ─────────────
         window.addEventListener('onEmbeddedMessagingWindowClosed', () => {
             console.log('🔒 Chat closed — returning to V1');
             pendingMessage = null;
@@ -120,7 +123,7 @@
             showV1();
         });
 
-        // ── V1 UI: Send button + Enter key ────────────────────
+        // ── V1 UI events ──────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             const sendBtn = document.getElementById('sendBtn');
             const chatInput = document.getElementById('chatInput');
@@ -137,7 +140,6 @@
                 if (e.key === 'Enter') sendBtn.click();
             });
 
-            // Quick buttons — use data-msg attribute
             document.querySelectorAll('.quick-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     launchChatWithMessage(btn.dataset.msg);
