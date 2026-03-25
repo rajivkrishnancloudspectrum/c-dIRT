@@ -3,51 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Lucy Chat Full Screen</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body, html {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        /* Hide FAB button */
-        .embeddedMessagingConversationButton,
-        .embeddedMessagingConversationButtonContainer {
-            display: none !important;
-        }
-
-        /* Force iframe full screen */
-        .embeddedMessagingFrame {
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100% !important;
-            max-height: 100% !important;
-            margin: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-    </style>
+    <title>Charles & Dean Finance Assistant</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- NO wrapper div — it was sitting on top of the iframe blocking all input -->
+    <!-- V1: Static landing page -->
+    <div id="v1-landing">
+        <div id="chat-container">
+            <div class="title">Charles &amp; Dean Finance Assistant</div>
+            <div class="subtitle">Ask anything about vehicle finance, eligibility or applications</div>
 
-    <script type='text/javascript'>
+            <div class="input-wrapper">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Ask about vehicle finance..." />
+                <button id="sendBtn" class="send-btn">Send</button>
+            </div>
 
+            <div class="quick-options">
+                <button class="quick-btn" data-msg="Need vehicle finance help">Need vehicle finance help</button>
+                <button class="quick-btn" data-msg="Check my eligibility">Check my eligibility</button>
+                <button class="quick-btn" data-msg="Help me choose the right vehicle finance option">Help me choose a plan</button>
+                <button class="quick-btn" data-msg="I want to apply for vehicle finance">Start application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- V2: Full-screen chat shell (SF iframe renders here) -->
+    <div id="v2-chat"></div>
+
+    <script>
+        // ── State ──────────────────────────────────────────────
+        let pendingMessage = null;   // message captured from v1
+        let chatReady = false;       // true once onEmbeddedMessagingButtonCreated fires
+        let messageSent = false;     // guard: only send once per session
+
+        // ── V1 → V2 transition ────────────────────────────────
+        function showV2() {
+            document.getElementById('v1-landing').style.display = 'none';
+            document.getElementById('v2-chat').style.display = 'block';
+        }
+
+        function showV1() {
+            document.getElementById('v2-chat').style.display = 'none';
+            document.getElementById('v1-landing').style.display = 'flex';
+        }
+
+        // ── Launch chat (called from v1 buttons / input) ──────
+        function launchChatWithMessage(message) {
+            if (message) {
+                console.log('📝 Captured message:', message);
+                pendingMessage = message;
+                messageSent = false;
+            }
+
+            if (chatReady) {
+                // API already ready — launch immediately
+                embeddedservice_bootstrap.utilAPI.launchChat()
+                    .then(() => console.log('✅ Chat launched'))
+                    .catch(err => console.error('❌ launchChat failed:', err));
+            } else {
+                // API not ready yet — will auto-launch once button is created
+                console.log('⏳ Chat API not ready yet, will launch on ButtonCreated');
+            }
+        }
+
+        // ── SF Event: Button created → hide FAB + launch ──────
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+            console.log('🔔 onEmbeddedMessagingButtonCreated — API ready');
+            chatReady = true;
+
+            // Hide the FAB
             embeddedservice_bootstrap.utilAPI.hideChatButton();
-            embeddedservice_bootstrap.utilAPI.launchChat()
-                .then(() => console.log('Chat launched successfully'))
-                .catch(err => console.error('launchChat failed:', err));
+
+            // If user already clicked something on v1, launch now
+            if (pendingMessage) {
+                embeddedservice_bootstrap.utilAPI.launchChat()
+                    .then(() => console.log('✅ Chat launched with pending message'))
+                    .catch(err => console.error('❌ launchChat failed:', err));
+            }
         });
 
+        // ── SF Event: Chat window opens → show V2 full screen ─
+        window.addEventListener('onEmbeddedMessagingConversationOpened', () => {
+            console.log('💬 Conversation opened — switching to V2');
+            showV2();
+        });
+
+        // ── SF Event: Bot message received → send pending msg ─
+        window.addEventListener('onEmbeddedMessagingConversationEntry', (event) => {
+            const entry = event.detail?.conversationEntry;
+            if (!entry) return;
+
+            // Only trigger on agent/bot messages, not end user
+            const isAgentMessage = entry.entryType === 'Message' &&
+                                   entry.sender?.role !== 'EndUser';
+
+            if (isAgentMessage && pendingMessage && !messageSent) {
+                console.log('🤖 Bot greeted — sending captured message:', pendingMessage);
+                messageSent = true;
+                embeddedservice_bootstrap.utilAPI.sendTextMessage(pendingMessage);
+                pendingMessage = null;
+            }
+        });
+
+        // ── SF Event: Window closed → back to V1, reset state ─
+        window.addEventListener('onEmbeddedMessagingWindowClosed', () => {
+            console.log('🔒 Chat closed — returning to V1');
+            pendingMessage = null;
+            messageSent = false;
+            showV1();
+        });
+
+        // ── SF Event: Minimized → show V1 underneath ─────────
+        window.addEventListener('onEmbeddedMessagingWindowMinimized', () => {
+            console.log('➖ Chat minimized');
+            showV1();
+        });
+
+        // ── V1 UI: Send button + Enter key ────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const sendBtn = document.getElementById('sendBtn');
+            const chatInput = document.getElementById('chatInput');
+
+            sendBtn.addEventListener('click', () => {
+                const msg = chatInput.value.trim();
+                if (msg) {
+                    chatInput.value = '';
+                    launchChatWithMessage(msg);
+                }
+            });
+
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendBtn.click();
+            });
+
+            // Quick buttons — use data-msg attribute
+            document.querySelectorAll('.quick-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    launchChatWithMessage(btn.dataset.msg);
+                });
+            });
+        });
+
+        // ── SF Init ───────────────────────────────────────────
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
@@ -60,15 +158,14 @@
                     }
                 );
             } catch (err) {
-                console.error('Initialization Error:', err);
+                console.error('❌ SF Init Error:', err);
             }
         }
-
     </script>
 
-    <script type='text/javascript'
-            src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js'
-            onload='initEmbeddedMessaging()'>
+    <script
+        src='https://charlesdean--partialcop.sandbox.my.site.com/ESWWebAIAgentV21769435828034/assets/js/bootstrap.min.js'
+        onload='initEmbeddedMessaging()'>
     </script>
 
 </body>
