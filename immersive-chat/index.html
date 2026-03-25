@@ -64,10 +64,6 @@
         window.addEventListener('onEmbeddedMessagingReady', () => {
             console.log('✅ Embedded Messaging Ready');
 
-            // ✅ Key: tell SF to render inside our container, not floating freely
-            embeddedservice_bootstrap.settings.targetElement =
-                document.body.querySelector('#embeddedMessagingContainer');
-
             // ── Conversation opened ───────────────────────────
             window.addEventListener('onEmbeddedMessagingConversationOpened', () => {
                 console.log('💬 Conversation opened');
@@ -121,30 +117,7 @@
         // ── SF: Button created → hide FAB via API + DOM poll ──
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
             console.log('🔔 Button created — hiding FAB');
-
-            // Hide via official API
             embeddedservice_bootstrap.utilAPI.hideChatButton();
-
-            // Also poll DOM to catch shadow-rendered button elements
-            const pollHideFAB = setInterval(() => {
-                const selectors = [
-                    '.embeddedMessagingConversationButton',
-                    '.embeddedMessagingConversationButtonContainer',
-                    '#embeddedMessagingConversationButton',
-                    'button[data-type="fab"]'
-                ];
-                selectors.forEach(sel => {
-                    document.querySelectorAll(sel).forEach(el => {
-                        el.style.setProperty('display', 'none', 'important');
-                        el.style.setProperty('visibility', 'hidden', 'important');
-                        el.style.setProperty('opacity', '0', 'important');
-                        el.style.setProperty('pointer-events', 'none', 'important');
-                    });
-                });
-            }, 300);
-
-            // Stop polling after 10s — button should be gone by then
-            setTimeout(() => clearInterval(pollHideFAB), 10000);
         });
 
         // ── V1 UI events ──────────────────────────────────────
@@ -175,6 +148,9 @@
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'en_US';
+                embeddedservice_bootstrap.settings.displayMode = 'inline';
+                embeddedservice_bootstrap.settings.targetElement =
+                    document.getElementById('embeddedMessagingContainer');
                 embeddedservice_bootstrap.init(
                     '00DTA00000B1e6j',
                     'Web_AI_Agent_V2',
