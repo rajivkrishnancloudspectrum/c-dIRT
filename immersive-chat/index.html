@@ -14,43 +14,37 @@
             background: #fff;
         }
 
-        /* Hide FAB */
+        /* Hide FAB button */
         .embeddedMessagingConversationButton,
         .embeddedMessagingConversationButtonContainer {
             display: none !important;
+        }
+
+        /* Force iframe full screen */
+        .embeddedMessagingFrame {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
         }
     </style>
 </head>
 <body>
 
+    <!-- NO wrapper div — it was sitting on top of the iframe blocking all input -->
+
     <script type='text/javascript'>
 
         window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-            console.log('Button created — hiding FAB and launching chat...');
             embeddedservice_bootstrap.utilAPI.hideChatButton();
             embeddedservice_bootstrap.utilAPI.launchChat()
-                .then(() => {
-                    console.log('Chat launched — inspecting DOM...');
-
-                    // Give SF a moment to render, then log exactly what's in the DOM
-                    setTimeout(() => {
-                        const all = document.querySelectorAll('*');
-                        const sfEls = [...all].filter(el => 
-                            el.className && typeof el.className === 'string' && 
-                            el.className.includes('embedded')
-                        );
-                        sfEls.forEach(el => {
-                            const rect = el.getBoundingClientRect();
-                            console.log(`TAG: ${el.tagName} | CLASS: ${el.className} | RECT: top=${rect.top} left=${rect.left} w=${rect.width} h=${rect.height}`);
-                        });
-
-                        // Also log iframes
-                        document.querySelectorAll('iframe').forEach(f => {
-                            const rect = f.getBoundingClientRect();
-                            console.log(`IFRAME: src=${f.src} | RECT: top=${rect.top} left=${rect.left} w=${rect.width} h=${rect.height} | style=${f.style.cssText}`);
-                        });
-                    }, 2000);
-                })
+                .then(() => console.log('Chat launched successfully'))
                 .catch(err => console.error('launchChat failed:', err));
         });
 

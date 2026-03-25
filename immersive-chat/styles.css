@@ -1,44 +1,25 @@
 /* Base Reset */
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body, html {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-color: #ffffff;
+    background: #ffffff;
 }
 
-/* 1. HIDE THE DEFAULT BUTTON IMMEDIATELY */
-.embeddedMessagingConversationButton, 
-.embeddedMessagingConversationButtonContainer,
-[class*="embeddedMessagingConversationButton"],
-button[data-type="fab"] {
+/* Hide the FAB button */
+.embeddedMessagingConversationButton,
+.embeddedMessagingConversationButtonContainer {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
 }
 
-/* 2. THE CONTAINER */
-#chatContainer {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-}
-
-/* 3. THE NUCLEAR FULL-SCREEN OVERRIDES */
-.embeddedMessagingFrame, 
-.embeddedServiceSidebar,
-embeddedservice-chat-header,
-.embeddedServiceSidebar.layout-docked,
-.embeddedServiceSidebar.layout-float {
+/* Force iframe full screen */
+.embeddedMessagingFrame {
     position: fixed !important;
     inset: 0 !important;
     width: 100vw !important;
@@ -49,13 +30,4 @@ embeddedservice-chat-header,
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Force the internal iframe to scale to the edges */
-.embeddedMessagingFrame iframe {
-    width: 100% !important;
-    height: 100% !important;
 }
